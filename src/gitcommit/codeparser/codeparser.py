@@ -5,6 +5,7 @@ import shutil
 import os
 
 from git import Repo
+from huepy import *
 from pprint import pprint
 
 from gitcommit.codeparser.parsed_file import ParsedFile
@@ -32,6 +33,7 @@ class CodeParser:
         self._re = re.compile(f".*{self._mark}.*")
         self._changed_files = []
         self._commented_files = []
+        self._uncommented_files = []
         self._new_files = []
         self._parsed_files = []
         self._remove_comments = remove_comments
@@ -51,8 +53,6 @@ class CodeParser:
         self._commit.body = self._body
         self._get_git_changes()
         self._parse_changed_files()
-        if self._untracked:
-            self._parse_new_files()
 
         try:
             creator = CommentCreator(
@@ -72,22 +72,29 @@ class CodeParser:
         with open(creator.comment_file, 'r') as f:
             commit_file = f.read()
 
-        print(f"This is the content of your git commit message:")
+        print(lightgreen(f"This is the content of your git commit message:"))
+        print('------------------------------------------------')
         print(commit_file)
-        print(f'You can find it here: {creator.comment_file}')
+        print('------------------------------------------------')
+        print(lightgreen(f'You can find it here: {creator.comment_file}'))
 
         if self._remove_comments:
-            choose = input("Are you sure you want to remove gitcommit comments from code? [y/N]")
+            choose = input(lightred("Are you sure you want to remove gitcommit comments from code? [y/N]"))
             if choose == 'y':
                 self._remove_comments_from_code()
-                print(f"gitcommit comments removed from codebase")
+                print(lightgreen(f"gitcommit comments removed from codebase"))
             else:
-                print(f"gitcommit comments NOT removed from codebase")
-                print(f"Review code changes at {self._temp_dir}")
+                print(orange(f"gitcommit comments NOT removed from codebase"))
+                print(orange(f"Review code changes at {self._temp_dir}"))
         else:
-            print(f"Review code changes at {self._temp_dir}")
+            print(orange(f"Review code changes at {self._temp_dir}"))
 
-        print(f'\nUse it in git with \n"git commit -f {creator.comment_file}"')
+        if self._uncommented_files:
+            print(lightred(f"\nThe following files have code changes but no gitcomment marks"))
+            for file_name in self._uncommented_files:
+                print(file_name)
+
+        print(lightblue(f'\nUse it in git with \n"git commit -f {creator.comment_file}"'))
 
     def _get_git_changes(self):
         try:
@@ -105,7 +112,7 @@ class CodeParser:
 
         if self._untracked:
             for entry in repo.untracked_files:
-                self._new_files.append(entry)
+                self._changed_files.append(entry)
 
     def _parse_changed_files(self):
         for code_file in self._changed_files:
@@ -132,33 +139,11 @@ class CodeParser:
 
                     line_nr += 1
 
+            if not commented:
+                self._uncommented_files.append(code_file)
+
             self._parsed_files.append(parsed)
             self._write_intermediate_file(
-                commented=commented, file_name=code_file, file_content=new_file
-            )
-
-    def _parse_new_files(self):
-        for code_file in self._new_files:
-            line_nr = 1
-            new_file = []
-            commented = False
-            with open(f"{self._path}/{code_file}", "r") as f:
-                for line in f:
-                    try:
-                        new_line, commented = self._parse_line(
-                            line=line, line_nr=line_nr, file_name=code_file
-                        )
-                        if not commented:
-                            new_file.append(new_line)
-                        else:
-                            if new_line.strip() != "":
-                                new_file.append(new_line)
-                    except Exception as e:
-                        logger.error(f"Error parsing line {line}; {e}")
-
-                    line_nr += 1
-
-            self._write_clean_file(
                 commented=commented, file_name=code_file, file_content=new_file
             )
 

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8905a3081b11d311e813c9f0b05d4e2f0dc39d4a975e56558f8779e5f4e4257c"
+            "sha256": "cfafdad923b80a0ee447f69ac51cb62d575dfa0ce15653d74b1ba636c769f300"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -38,6 +38,13 @@
             ],
             "index": "pypi",
             "version": "==2.1.11"
+        },
+        "huepy": {
+            "hashes": [
+                "sha256:200c5af131fe52d3b5a0b2061a1eaaf60b34d6aafb98f11f22f503d14c9bfbf4"
+            ],
+            "index": "pypi",
+            "version": "==0.9.8.1"
         },
         "jinja2": {
             "hashes": [

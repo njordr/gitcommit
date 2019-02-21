@@ -13,6 +13,7 @@ pylava = "*"
 gitpython = "*"
 click = "*"
 jinja2 = "*"
+huepy = "*"
 
 [requires]
 python_version = "3.6"
