@@ -12,7 +12,6 @@ pylava = "*"
 [packages]
 gitpython = "*"
 click = "*"
-pylava = "*"
 jinja2 = "*"
 
 [requires]

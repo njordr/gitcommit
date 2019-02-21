@@ -33,9 +33,12 @@ def setup_logging(loglevel):
 
 @click.command()
 @click.argument("path")
-@click.option("--log-level", default="DEBUG", help="Desired log level")
-@click.option("--debug/--no-debug", "-d", default=False, help="Debug mode")
-@click.option("--dry-run/--no-dry-run", default=False, help="Do not overwrite files")
+@click.option("--log-level", default="INFO", help="Desired log level")
+@click.option(
+    "--remove-comments/--no-remove-comments", '-r',
+    default=False,
+    help="Remove gitcommit related comments from code",
+)
 @click.option(
     "--untracked/--no-untracked", default=False, help="Parse also untracked files"
 )
@@ -54,8 +57,7 @@ def main(
     log_level: str,
     comment: str,
     mark: str,
-    debug: bool,
-    dry_run: bool,
+    remove_comments: bool,
     untracked: bool,
     summary: str,
 ):
@@ -66,19 +68,15 @@ def main(
         path=path,
         comment=comment,
         mark=mark,
-        dry_run=dry_run,
-        debug=debug,
+        remove_comments=remove_comments,
         untracked=untracked,
         summary=summary,
     )
 
-    message_file_name = "unknown"
     try:
-        message_file_name = parser.run()
+        parser.run()
     except Exception as e:
         _logger.error(f"Something went wrong during code parser. Error: {e}")
-
-    print(message_file_name)
 
 
 if __name__ == "__main__":
