@@ -5,10 +5,15 @@ verify_ssl = true
 
 [dev-packages]
 pylama = "*"
+flake8 = "*"
+black = "*"
+pylava = "*"
 
 [packages]
 gitpython = "*"
 click = "*"
+pylava = "*"
+jinja2 = "*"
 
 [requires]
 python_version = "3.6"

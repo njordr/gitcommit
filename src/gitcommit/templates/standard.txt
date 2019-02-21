@@ -1,0 +1,13 @@
+{{ commit.summary }}
+
+{% if commit.body %}
+{% for line in commit.body %}
+{{ line }}
+{% endfor %}
+{% endif %}
+
+{% for file in parsed_files %}
+{% for comment in file.comments %}
+- {{ file.file_name }}:{{ comment.line_nr }}:{{ comment.comment }}
+{% endfor %}
+{% endfor %}
